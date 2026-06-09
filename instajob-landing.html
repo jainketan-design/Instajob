@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InstaJob — Instagram Creator Job Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ig-purple: #833AB4;
+    --ig-pink:   #E1306C;
+    --ig-orange: #F77737;
+    --ig-grad: linear-gradient(45deg, #833AB4, #E1306C, #F77737);
+    --bg: #0A0A0A;
+    --bg2: #111111;
+    --bg3: #1A1A1A;
+    --border: #2A2A2A;
+    --text: #FFFFFF;
+    --muted: #888888;
+    --card: #141414;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* GRADIENT TEXT */
+  .grad-text {
+    background: var(--ig-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-size: 22px; font-weight: 900; letter-spacing: -0.5px;
+    background: var(--ig-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-badge {
+    font-size: 12px; font-weight: 600;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 100px;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(131,58,180,0.15) 0%, rgba(225,48,108,0.08) 50%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  .hero-eyebrow span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ig-grad);
+    background: linear-gradient(45deg, var(--ig-purple), var(--ig-pink));
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    max-width: 800px;
+    margin-bottom: 20px;
+  }
+
+  .hero p {
+    font-size: clamp(16px, 2vw, 18px);
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+
+  /* WAITLIST FORM */
+  .waitlist-form {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    width: 100%; max-width: 500px;
+    margin-bottom: 20px;
+  }
+
+  .waitlist-form input, .waitlist-form select {
+    flex: 1; min-width: 200px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .waitlist-form input::placeholder { color: var(--muted); }
+  .waitlist-form select option { background: #1A1A1A; }
+
+  .waitlist-form input:focus,
+  .waitlist-form select:focus {
+    border-color: var(--ig-pink);
+  }
+
+  .btn-grad {
+    background: var(--ig-grad);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+  }
+
+  .btn-grad:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-grad:active { transform: translateY(0); }
+
+  .hero-note {
+    font-size: 13px; color: var(--muted);
+  }
+
+  /* SUCCESS */
+  .success-msg {
+    display: none;
+    background: linear-gradient(135deg, rgba(131,58,180,0.15), rgba(225,48,108,0.1));
+    border: 1px solid rgba(225,48,108,0.3);
+    border-radius: 12px;
+    padding: 16px 24px;
+    font-size: 15px;
+    color: var(--text);
+    text-align: center;
+    max-width: 420px;
+  }
+
+  /* STATS */
+  .stats {
+    display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;
+    margin-top: 60px;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 28px; font-weight: 900; letter-spacing: -1px;
+    background: var(--ig-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* SECTION */
+  section {
+    padding: 80px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    background: var(--ig-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+
+  .section-sub {
+    font-size: 16px; color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  /* FOR WHO SECTION */
+  .for-who-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .for-who-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: border-color 0.3s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .for-who-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--ig-grad);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .for-who-card:hover { border-color: #3A3A3A; transform: translateY(-4px); }
+  .for-who-card:hover::before { opacity: 1; }
+
+  .card-icon {
+    font-size: 32px; margin-bottom: 16px; display: block;
+  }
+
+  .card-title {
+    font-size: 20px; font-weight: 800; margin-bottom: 10px;
+  }
+
+  .card-desc {
+    font-size: 14px; color: var(--muted); line-height: 1.7;
+  }
+
+  .card-list {
+    list-style: none; margin-top: 16px;
+  }
+
+  .card-list li {
+    font-size: 13px; color: #AAAAAA;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-list li:last-child { border-bottom: none; }
+
+  .card-list li::before {
+    content: '→';
+    background: var(--ig-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* HOW IT WORKS */
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .how-step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .step-num {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    background: var(--ig-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .step-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* VS SECTION */
+  .vs-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .vs-table th {
+    padding: 16px 20px;
+    font-size: 13px; font-weight: 700; text-align: left;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+
+  .vs-table th.highlight {
+    background: linear-gradient(135deg, rgba(131,58,180,0.2), rgba(225,48,108,0.1));
+    color: white;
+  }
+
+  .vs-table td {
+    padding: 14px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .vs-table td.highlight {
+    background: linear-gradient(135deg, rgba(131,58,180,0.06), rgba(225,48,108,0.04));
+    color: var(--text); font-weight: 600;
+  }
+
+  .vs-table tr:last-child td { border-bottom: none; }
+
+  .check { color: #4ADE80; }
+  .cross { color: #666; }
+
+  /* CTA SECTION */
+  .cta-section {
+    background: linear-gradient(135deg, rgba(131,58,180,0.12), rgba(225,48,108,0.08), rgba(247,119,55,0.05));
+    border: 1px solid rgba(225,48,108,0.2);
+    border-radius: 24px;
+    padding: 64px 40px;
+    text-align: center;
+    max-width: 1100px;
+    margin: 0 auto 80px;
+  }
+
+  .cta-section h2 {
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+
+  .cta-section p {
+    font-size: 16px; color: var(--muted);
+    margin-bottom: 36px;
+  }
+
+  .cta-form {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    max-width: 460px; margin: 0 auto 12px;
+  }
+
+  .cta-form input, .cta-form select {
+    flex: 1; min-width: 180px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+
+  .cta-form input::placeholder { color: var(--muted); }
+  .cta-form select option { background: #1A1A1A; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .footer-logo {
+    font-size: 18px; font-weight: 900;
+    background: var(--ig-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .footer-text { font-size: 13px; color: var(--muted); }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .waitlist-form input, .waitlist-form select { min-width: 100%; }
+    .stats { gap: 24px; }
+    .cta-section { padding: 40px 24px; }
+    footer { flex-direction: column; text-align: center; }
+    .vs-table { font-size: 12px; }
+    .vs-table th, .vs-table td { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">InstaJob</div>
+  <div class="nav-badge">🚀 Waitlist Open</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">
+    <span></span>
+    India's First Instagram Creator Job Board
+  </div>
+
+  <h1>
+    Find your next<br/>
+    <span class="grad-text">Instagram job.</span>
+  </h1>
+
+  <p>
+    InstaJob connects Instagram creators, freelancers, and brands — all in one place. Post jobs, find work, close brand deals.
+  </p>
+
+  <div class="waitlist-form" id="heroForm">
+    <input type="email" id="heroEmail" placeholder="Your email address" required/>
+    <select id="heroType">
+      <option value="" disabled selected>I am a...</option>
+      <option value="creator">Creator</option>
+      <option value="freelancer">Freelancer</option>
+      <option value="brand">Brand / Agency</option>
+    </select>
+    <button class="btn-grad" onclick="joinWaitlist('heroEmail','heroType','heroSuccess')">Join Waitlist — It's Free</button>
+  </div>
+
+  <div class="success-msg" id="heroSuccess">
+    🎉 You're on the list! We'll notify you when InstaJob launches.
+  </div>
+
+  <p class="hero-note">No spam. No payment. Just early access.</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">0%</div>
+      <div class="stat-label">Commission charged</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">User types served</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Free</div>
+      <div class="stat-label">To join waitlist</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOR WHO -->
+<section>
+  <span class="section-eyebrow">Who It's For</span>
+  <h2 class="section-title">Built for the entire<br/><span class="grad-text">Instagram ecosystem</span></h2>
+  <p class="section-sub">Whether you create content, edit it, or fund it — InstaJob has a place for you.</p>
+
+  <div class="for-who-grid">
+    <div class="for-who-card">
+      <span class="card-icon">🎥</span>
+      <div class="card-title">Creators</div>
+      <div class="card-desc">Hire the right people who actually understand Instagram, Reels, and the creator economy.</div>
+      <ul class="card-list">
+        <li>Post a job in minutes</li>
+        <li>Find Reels editors who get retention</li>
+        <li>Hire caption writers, DM managers</li>
+        <li>Get brand deal offers directly</li>
+      </ul>
+    </div>
+
+    <div class="for-who-card">
+      <span class="card-icon">✂️</span>
+      <div class="card-title">Freelancers</div>
+      <div class="card-desc">Get hired by creators who value your Instagram-specific skills — no competing with generic talent.</div>
+      <ul class="card-list">
+        <li>Free profile listing</li>
+        <li>Apply to creator jobs</li>
+        <li>Reels editing, graphic design, UGC</li>
+        <li>0% commission — you keep everything</li>
+      </ul>
+    </div>
+
+    <div class="for-who-card">
+      <span class="card-icon">🏷️</span>
+      <div class="card-title">Brands</div>
+      <div class="card-desc">Post brand deals and find the right Instagram creators for campaigns — filtered by niche and audience.</div>
+      <ul class="card-list">
+        <li>Post brand deal opportunities</li>
+        <li>Filter creators by niche</li>
+        <li>Verified creator profiles</li>
+        <li>Direct outreach, no middlemen</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section>
+  <span class="section-eyebrow">How It Works</span>
+  <h2 class="section-title">Simple.<br/><span class="grad-text">Seriously simple.</span></h2>
+  <p class="section-sub">No complicated onboarding. No agency BS. Just connect and work.</p>
+
+  <div class="how-grid">
+    <div class="how-step">
+      <span class="step-num">STEP 01</span>
+      <div class="step-title">Create Your Profile</div>
+      <div class="step-desc">Sign up as a creator, freelancer, or brand. Link your Instagram to verify your profile.</div>
+    </div>
+    <div class="how-step">
+      <span class="step-num">STEP 02</span>
+      <div class="step-title">Post or Browse</div>
+      <div class="step-desc">Creators post jobs. Brands post deals. Freelancers browse and apply to what fits.</div>
+    </div>
+    <div class="how-step">
+      <span class="step-num">STEP 03</span>
+      <div class="step-title">Connect Directly</div>
+      <div class="step-desc">Message each other directly on the platform. No middlemen, no commission cuts.</div>
+    </div>
+    <div class="how-step">
+      <span class="step-num">STEP 04</span>
+      <div class="step-title">Work & Grow</div>
+      <div class="step-desc">Close the deal, do great work, build your reputation with reviews on InstaJob.</div>
+    </div>
+  </div>
+</section>
+
+<!-- VS SECTION -->
+<section>
+  <span class="section-eyebrow">Why InstaJob</span>
+  <h2 class="section-title">Not just another<br/><span class="grad-text">freelance platform.</span></h2>
+  <p class="section-sub">General platforms don't understand Instagram. We're built for it from day one.</p>
+
+  <table class="vs-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Fiverr / Upwork</th>
+        <th class="highlight">InstaJob ✦</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Instagram-specific talent</td>
+        <td class="cross">✕ Generic only</td>
+        <td class="highlight check">✓ Instagram-first</td>
+      </tr>
+      <tr>
+        <td>Brand Deal marketplace</td>
+        <td class="cross">✕ Not available</td>
+        <td class="highlight check">✓ Built-in</td>
+      </tr>
+      <tr>
+        <td>Commission on earnings</td>
+        <td class="cross">10%–20% cut</td>
+        <td class="highlight check">✓ 0% forever</td>
+      </tr>
+      <tr>
+        <td>Creator × Creator collabs</td>
+        <td class="cross">✕ Not available</td>
+        <td class="highlight check">✓ Collab finder</td>
+      </tr>
+      <tr>
+        <td>UGC Creator marketplace</td>
+        <td class="cross">✕ Not dedicated</td>
+        <td class="highlight check">✓ Dedicated section</td>
+      </tr>
+      <tr>
+        <td>Instagram profile verification</td>
+        <td class="cross">✕ No</td>
+        <td class="highlight check">✓ Real follower check</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- CTA -->
+<div style="padding: 0 24px;">
+  <div class="cta-section">
+    <h2>Be the first to<br/><span class="grad-text">get access.</span></h2>
+    <p>Join the waitlist today. Early members get free job postings + priority listing at launch.</p>
+
+    <div class="cta-form">
+      <input type="email" id="ctaEmail" placeholder="your@email.com"/>
+      <select id="ctaType">
+        <option value="" disabled selected>I am a...</option>
+        <option value="creator">Creator</option>
+        <option value="freelancer">Freelancer</option>
+        <option value="brand">Brand / Agency</option>
+      </select>
+    </div>
+    <button class="btn-grad" style="max-width:300px;margin:0 auto 12px;display:block;" onclick="joinWaitlist('ctaEmail','ctaType','ctaSuccess')">
+      Join the Waitlist →
+    </button>
+    <div class="success-msg" id="ctaSuccess" style="margin:0 auto;">
+      🎉 You're in! See you at launch.
+    </div>
+    <p style="font-size:13px;color:var(--muted);">Free to join. No credit card needed.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">InstaJob</div>
+  <div class="footer-text">India's Instagram Creator Job Board · Coming Soon</div>
+  <div class="footer-text">© 2025 InstaJob</div>
+</footer>
+
+<script>
+  // Store waitlist entries in memory (for demo) + localStorage
+  let waitlist = JSON.parse(localStorage.getItem('instajob_waitlist') || '[]');
+
+  function joinWaitlist(emailId, typeId, successId) {
+    const email = document.getElementById(emailId).value.trim();
+    const type = document.getElementById(typeId).value;
+
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    if (!type) {
+      alert('Please select your role.');
+      return;
+    }
+
+    // Save entry
+    const entry = { email, type, date: new Date().toISOString() };
+    waitlist.push(entry);
+    localStorage.setItem('instajob_waitlist', JSON.stringify(waitlist));
+
+    // Show success
+    const form = document.getElementById(emailId).parentElement;
+    form.style.display = 'none';
+
+    const successEl = document.getElementById(successId);
+    successEl.style.display = 'block';
+
+    // Hide nearby button if cta
+    if (emailId === 'ctaEmail') {
+      document.querySelector('.cta-section .btn-grad').style.display = 'none';
+    }
+  }
+</script>
+
+</body>
+</html>
